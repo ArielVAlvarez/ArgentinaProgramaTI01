@@ -1,8 +1,10 @@
 package tpfinal;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class Juego {
 
@@ -11,10 +13,10 @@ public class Juego {
 	private Map<String, Integer> puntuacion = new HashMap<String, Integer>();
 
 	/**
-	 * Metodo que recorre el arraylist de pronosticos.
-	 * Obtiene un partido de HasHMap de partidos usando el nro de partido como key
-	 * Compara el pronostico con el resultado del partido 
-	 * Cuenta los aciertos y muestra por consola la catidad de puntos de los participantes
+	 * Metodo que recorre el arraylist de pronosticos. Obtiene un partido de HasHMap
+	 * de partidos usando el nro de partido como key Compara el pronostico con el
+	 * resultado del partido Cuenta los aciertos y muestra por consola la catidad de
+	 * puntos de los participantes
 	 * 
 	 */
 	public void resolverJuego() {
@@ -35,7 +37,7 @@ public class Juego {
 			// Recorre el arraylist de pronostico comparando
 			for (Pronostico pronostico : pronosticos) {
 
-				//Obtiene un Partido del HashMap paridos 
+				// Obtiene un Partido del HashMap paridos
 				// key = nro de partido
 				partido = partidos.get(pronostico.getNroPartido());
 
@@ -46,7 +48,7 @@ public class Juego {
 					// le suma uno y actualiza el HashMap
 
 					if (puntuacion.containsKey(pronostico.getNombre())) {
-						
+
 						puntos = puntuacion.get(pronostico.getNombre());
 						puntos++;
 						puntuacion.put(pronostico.getNombre(), puntos);
@@ -63,11 +65,35 @@ public class Juego {
 			e.printStackTrace();
 		}
 
-		// Recorre el HashMap y lo muestra. no esta ordenado
-		
-		for (String key : puntuacion.keySet()) {
-			System.out.println("Participante: " + key + " Puntos = " + puntuacion.get(key));
-		}
+		// Ordena el Hasmap puntuacion por la cantidad de puntos de
+		// los participantes
+		UserComparator comparator = new UserComparator(puntuacion);
+		Map<String, Integer> result = new TreeMap<String, Integer>(comparator);
+		result.putAll(puntuacion);
+
+		// recorre y muestra por pantalla los participantes y sus puntajes
+		result.forEach((k, v) -> System.out.println("El participante " + k + " obtubo un puntaje de: " + v));
+
 	}
 
+}
+
+/**
+ * clase definida que implementa la interfaz del Comparator y le pasamos su
+ * objeto al TreeMap para que se ordene Map por valor
+ * 
+ */
+class UserComparator implements Comparator<Object> {
+	Map<String, Integer> map;
+
+	public UserComparator(Map<String, Integer> map) {
+		this.map = map;
+	}
+
+	public int compare(Object o1, Object o2) {
+		if (map.get(o2) == map.get(o1))
+			return 1;
+		else
+			return ((Integer) map.get(o1)).compareTo((Integer) map.get(o2)) * -1;
+	}
 }
